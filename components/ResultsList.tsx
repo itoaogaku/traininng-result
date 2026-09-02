@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { AlertTriangle, Inbox, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AlertTriangle, CalendarDays, Inbox, Loader2 } from "lucide-react";
 import type {
   PracticeResult,
   PracticeStatus,
@@ -10,6 +10,15 @@ import type {
 } from "@/lib/types";
 import FilterBar from "@/components/FilterBar";
 import ResultCard from "@/components/ResultCard";
+
+function monthKeyOf(result: PracticeResult): string {
+  return result.practiceDate.slice(0, 7);
+}
+
+function formatMonthLabel(monthKey: string): string {
+  const [year, month] = monthKey.split("-");
+  return `${year}年${Number(month)}月`;
+}
 
 export default function ResultsList() {
   const [results, setResults] = useState<PracticeResult[] | null>(null);
@@ -20,6 +29,9 @@ export default function ResultsList() {
   const [status, setStatus] = useState<PracticeStatus | "all">("all");
   const [sort, setSort] = useState<SortField>("date");
   const [order, setOrder] = useState<SortOrder>("desc");
+
+  const [jumpMonth, setJumpMonth] = useState("");
+  const pendingScrollMonthRef = useRef<string | null>(null);
 
   const fetchResults = useCallback(async () => {
     setIsLoading(true);
@@ -54,6 +66,52 @@ export default function ResultsList() {
     return () => clearTimeout(timer);
   }, [fetchResults]);
 
+  // 練習日順（sort === "date"）のときだけ、月ごとにグループ化して見出しを表示する。
+  const monthGroups = useMemo(() => {
+    if (!results || sort !== "date") return null;
+    const groups: { monthKey: string; items: PracticeResult[] }[] = [];
+    const indexByMonth = new Map<string, number>();
+
+    for (const result of results) {
+      const monthKey = monthKeyOf(result);
+      const index = indexByMonth.get(monthKey);
+      if (index === undefined) {
+        indexByMonth.set(monthKey, groups.length);
+        groups.push({ monthKey, items: [result] });
+      } else {
+        groups[index].items.push(result);
+      }
+    }
+
+    return groups;
+  }, [results, sort]);
+
+  // sortを切り替えた直後は再取得を待つ必要があるため、
+  // 移動先の月はrefに保持しておき、resultsが更新されたタイミングでスクロールする。
+  useEffect(() => {
+    const month = pendingScrollMonthRef.current;
+    if (!month || !results) return;
+    document
+      .getElementById(`month-${month}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    pendingScrollMonthRef.current = null;
+  }, [results]);
+
+  const handleJumpMonthChange = (value: string) => {
+    setJumpMonth(value);
+    if (!value) return;
+
+    if (sort === "date") {
+      document
+        .getElementById(`month-${value}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    pendingScrollMonthRef.current = value;
+    setSort("date");
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <FilterBar
@@ -68,6 +126,20 @@ export default function ResultsList() {
         onRefresh={fetchResults}
         isLoading={isLoading}
       />
+
+      <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <CalendarDays className="h-4 w-4 shrink-0" />
+        <label htmlFor="jump-month" className="shrink-0">
+          月へ移動:
+        </label>
+        <input
+          id="jump-month"
+          type="month"
+          value={jumpMonth}
+          onChange={(e) => handleJumpMonthChange(e.target.value)}
+          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-700 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+        />
+      </div>
 
       {error && (
         <div className="flex items-start gap-2 rounded-md border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400">
@@ -90,8 +162,29 @@ export default function ResultsList() {
         </div>
       )}
 
-      {results && results.length > 0 && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {results && results.length > 0 && monthGroups && (
+        <div className="flex flex-col gap-6">
+          {monthGroups.map((group) => (
+            <div
+              key={group.monthKey}
+              id={`month-${group.monthKey}`}
+              className="flex flex-col gap-3"
+            >
+              <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                {formatMonthLabel(group.monthKey)}
+              </h2>
+              <div className="flex flex-col gap-3">
+                {group.items.map((result) => (
+                  <ResultCard key={result.id} result={result} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {results && results.length > 0 && !monthGroups && (
+        <div className="flex flex-col gap-3">
           {results.map((result) => (
             <ResultCard key={result.id} result={result} />
           ))}
