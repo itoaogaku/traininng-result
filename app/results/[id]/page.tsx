@@ -5,7 +5,7 @@ import { listPracticeResults, resolveResultPath } from "@/lib/practice-results";
 import { formatDateTime, formatFileSize } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import TeamBadge from "@/components/TeamBadge";
-import PdfViewer from "@/components/PdfViewer";
+import PdfViewer from "@/components/PdfViewerLoader";
 
 export default async function ResultDetailPage(
   props: PageProps<"/results/[id]">
