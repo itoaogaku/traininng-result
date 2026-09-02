@@ -114,31 +114,33 @@ export default function ResultsList() {
 
   return (
     <div className="flex flex-col gap-4">
-      <FilterBar
-        query={query}
-        onQueryChange={setQuery}
-        team={team}
-        onTeamChange={setTeam}
-        sort={sort}
-        onSortChange={setSort}
-        order={order}
-        onOrderToggle={() => setOrder((o) => (o === "asc" ? "desc" : "asc"))}
-        onRefresh={fetchResults}
-        isLoading={isLoading}
-      />
-
-      <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-        <CalendarDays className="h-4 w-4 shrink-0" />
-        <label htmlFor="jump-month" className="shrink-0">
-          月へ移動:
-        </label>
-        <input
-          id="jump-month"
-          type="month"
-          value={jumpMonth}
-          onChange={(e) => handleJumpMonthChange(e.target.value)}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-700 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+      <div className="sticky top-0 z-10 -mx-4 flex flex-col gap-3 border-b border-zinc-200 bg-zinc-50/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-zinc-50/85 dark:border-zinc-800 dark:bg-zinc-950/95 dark:supports-[backdrop-filter]:bg-zinc-950/85 sm:-mx-6 sm:px-6">
+        <FilterBar
+          query={query}
+          onQueryChange={setQuery}
+          team={team}
+          onTeamChange={setTeam}
+          sort={sort}
+          onSortChange={setSort}
+          order={order}
+          onOrderToggle={() => setOrder((o) => (o === "asc" ? "desc" : "asc"))}
+          onRefresh={fetchResults}
+          isLoading={isLoading}
         />
+
+        <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <CalendarDays className="h-4 w-4 shrink-0" />
+          <label htmlFor="jump-month" className="shrink-0">
+            月へ移動:
+          </label>
+          <input
+            id="jump-month"
+            type="month"
+            value={jumpMonth}
+            onChange={(e) => handleJumpMonthChange(e.target.value)}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-700 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+          />
+        </div>
       </div>
 
       {error && (
