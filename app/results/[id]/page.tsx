@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { listPracticeResults, resolveResultPath } from "@/lib/practice-results";
 import { formatDateTime, formatFileSize } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
+import TeamBadge from "@/components/TeamBadge";
 import PdfViewer from "@/components/PdfViewer";
 
 export default async function ResultDetailPage(
@@ -33,6 +34,7 @@ export default async function ResultDetailPage(
           <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
             {result.title}
           </h1>
+          <TeamBadge team={result.team} />
           <StatusBadge status={result.status} />
         </div>
 

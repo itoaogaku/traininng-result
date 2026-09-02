@@ -1,6 +1,6 @@
 import "server-only";
 import { getDropboxClient, getResultsFolderPath } from "@/lib/dropbox";
-import type { PracticeResult, PracticeStatus } from "@/lib/types";
+import type { PracticeResult, PracticeStatus, PracticeTeam } from "@/lib/types";
 
 // ファイル名中のトークンとステータスの対応表。
 // 例: "2026-09-01_合格_柔道乱取り.pdf" -> 日付・ステータス・タイトルを抽出
@@ -17,6 +17,13 @@ const STATUS_KEYWORDS: Record<string, PracticeStatus> = {
 };
 
 const DATE_TOKEN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** パス中の「男子」「女子」フォルダ名から所属を判定する */
+function inferTeam(path: string): PracticeTeam {
+  if (path.includes("男子")) return "male";
+  if (path.includes("女子")) return "female";
+  return "unknown";
+}
 
 function encodeResultId(path: string): string {
   return Buffer.from(path, "utf-8").toString("base64url");
@@ -93,6 +100,7 @@ export async function listPracticeResults(): Promise<PracticeResult[]> {
         modifiedAt,
         practiceDate: meta.practiceDate ?? modifiedAt.slice(0, 10),
         status: meta.status,
+        team: inferTeam(path),
       });
     }
 

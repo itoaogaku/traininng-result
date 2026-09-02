@@ -1,5 +1,8 @@
 export type PracticeStatus = "pass" | "fail" | "unclassified";
 
+/** Dropbox上のフォルダ名（男子練習結果/女子練習結果）から判定する所属区分 */
+export type PracticeTeam = "male" | "female" | "unknown";
+
 export interface PracticeResult {
   /** Dropboxのファイルパスをbase64urlエンコードした識別子 */
   id: string;
@@ -16,6 +19,7 @@ export interface PracticeResult {
   /** 練習日（ファイル名から抽出、無ければ更新日で代用） */
   practiceDate: string;
   status: PracticeStatus;
+  team: PracticeTeam;
 }
 
 export type SortField = "date" | "name";
