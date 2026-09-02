@@ -1,9 +1,9 @@
-import { CheckCircle2, HelpCircle, XCircle, type LucideIcon } from "lucide-react";
+import { CheckCircle2, XCircle, type LucideIcon } from "lucide-react";
 import type { PracticeStatus } from "@/lib/types";
 
 const STYLES: Record<
   PracticeStatus,
-  { label: string; className: string; Icon: LucideIcon }
+  { label: string; className: string; Icon: LucideIcon } | null
 > = {
   pass: {
     label: "合格",
@@ -17,16 +17,15 @@ const STYLES: Record<
       "bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/30",
     Icon: XCircle,
   },
-  unclassified: {
-    label: "未分類",
-    className:
-      "bg-zinc-100 text-zinc-600 ring-zinc-500/20 dark:bg-zinc-500/10 dark:text-zinc-400 dark:ring-zinc-500/30",
-    Icon: HelpCircle,
-  },
+  // ファイル名から合否を判定できない場合はバッジを表示しない
+  unclassified: null,
 };
 
 export default function StatusBadge({ status }: { status: PracticeStatus }) {
-  const { label, className, Icon } = STYLES[status];
+  const style = STYLES[status];
+  if (!style) return null;
+
+  const { label, className, Icon } = style;
   return (
     <span
       className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${className}`}
