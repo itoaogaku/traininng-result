@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, CalendarDays, Inbox, Loader2 } from "lucide-react";
 import type {
   PracticeResult,
-  PracticeStatus,
   PracticeTeam,
   SortField,
   SortOrder,
@@ -27,7 +26,6 @@ export default function ResultsList() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<PracticeStatus | "all">("all");
   const [team, setTeam] = useState<PracticeTeam | "all">("all");
   const [sort, setSort] = useState<SortField>("date");
   const [order, setOrder] = useState<SortOrder>("desc");
@@ -41,7 +39,6 @@ export default function ResultsList() {
     try {
       const params = new URLSearchParams({ sort, order });
       if (query) params.set("q", query);
-      if (status !== "all") params.set("status", status);
       if (team !== "all") params.set("team", team);
 
       const res = await fetch(`/api/dropbox/list?${params.toString()}`, {
@@ -62,7 +59,7 @@ export default function ResultsList() {
     } finally {
       setIsLoading(false);
     }
-  }, [query, status, team, sort, order]);
+  }, [query, team, sort, order]);
 
   useEffect(() => {
     const timer = setTimeout(fetchResults, 250);
@@ -120,8 +117,6 @@ export default function ResultsList() {
       <FilterBar
         query={query}
         onQueryChange={setQuery}
-        status={status}
-        onStatusChange={setStatus}
         team={team}
         onTeamChange={setTeam}
         sort={sort}

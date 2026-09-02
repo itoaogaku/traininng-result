@@ -1,18 +1,11 @@
 "use client";
 
 import { ArrowUpDown, RefreshCw, Search } from "lucide-react";
-import type {
-  PracticeStatus,
-  PracticeTeam,
-  SortField,
-  SortOrder,
-} from "@/lib/types";
+import type { PracticeTeam, SortField, SortOrder } from "@/lib/types";
 
 interface FilterBarProps {
   query: string;
   onQueryChange: (value: string) => void;
-  status: PracticeStatus | "all";
-  onStatusChange: (value: PracticeStatus | "all") => void;
   team: PracticeTeam | "all";
   onTeamChange: (value: PracticeTeam | "all") => void;
   sort: SortField;
@@ -32,8 +25,6 @@ const buttonClassName =
 export default function FilterBar({
   query,
   onQueryChange,
-  status,
-  onStatusChange,
   team,
   onTeamChange,
   sort,
@@ -68,19 +59,6 @@ export default function FilterBar({
           <option value="male">男子</option>
           <option value="female">女子</option>
           <option value="unknown">不明</option>
-        </select>
-
-        <select
-          value={status}
-          onChange={(event) =>
-            onStatusChange(event.target.value as PracticeStatus | "all")
-          }
-          className={selectClassName}
-        >
-          <option value="all">すべてのステータス</option>
-          <option value="pass">合格</option>
-          <option value="fail">不合格</option>
-          <option value="unclassified">未分類</option>
         </select>
 
         <select
