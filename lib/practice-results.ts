@@ -70,13 +70,15 @@ export async function listPracticeResults(): Promise<PracticeResult[]> {
   const results: PracticeResult[] = [];
   let response = await dbx.filesListFolder({
     path: folderPath,
-    recursive: false,
+    recursive: true,
   });
 
   for (;;) {
     for (const entry of response.result.entries) {
       if (entry[".tag"] !== "file") continue;
       if (!entry.name.toLowerCase().endsWith(".pdf")) continue;
+      // ZIP展開時にmacOSが作る "._foo.pdf" のようなリソースフォークファイルは除外
+      if (entry.name.startsWith("._")) continue;
 
       const path = entry.path_display ?? entry.path_lower ?? entry.name;
       const meta = parseNameMeta(entry.name);
