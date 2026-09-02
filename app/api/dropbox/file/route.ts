@@ -20,16 +20,24 @@ export async function GET(request: NextRequest) {
   try {
     const dbx = getDropboxClient();
     const response = await dbx.filesDownload({ path });
-    const fileBinary = response.result.fileBinary;
+    const { fileBinary, fileBlob } = response.result;
 
-    if (!fileBinary) {
+    // dropbox SDKはバンドル環境ではNode.jsでもブラウザ判定になり、
+    // fileBinaryの代わりにfileBlobを返すことがあるため両方に対応する。
+    const bytes = fileBinary
+      ? Buffer.from(fileBinary)
+      : fileBlob
+        ? Buffer.from(await fileBlob.arrayBuffer())
+        : null;
+
+    if (!bytes) {
       return NextResponse.json(
         { error: "ファイルを取得できませんでした" },
         { status: 404 }
       );
     }
 
-    return new NextResponse(Buffer.from(fileBinary), {
+    return new NextResponse(bytes, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="${encodeURIComponent(
