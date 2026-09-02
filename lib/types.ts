@@ -1,7 +1,7 @@
 export type PracticeStatus = "pass" | "fail" | "unclassified";
 
-/** Dropbox上のフォルダ名（男子練習結果/女子練習結果）から判定する所属区分 */
-export type PracticeTeam = "male" | "female" | "unknown";
+/** Dropbox上のフォルダ名（男子練習結果/女子練習結果/合宿）から判定する所属区分 */
+export type PracticeTeam = "male" | "female" | "camp";
 
 export interface PracticeResult {
   /** Dropboxのファイルパスをbase64urlエンコードした識別子 */

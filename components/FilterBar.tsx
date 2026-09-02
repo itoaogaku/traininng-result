@@ -58,7 +58,7 @@ export default function FilterBar({
           <option value="all">男女すべて</option>
           <option value="male">男子</option>
           <option value="female">女子</option>
-          <option value="unknown">不明</option>
+          <option value="camp">合宿</option>
         </select>
 
         <select

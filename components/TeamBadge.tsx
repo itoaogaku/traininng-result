@@ -1,6 +1,6 @@
 import type { PracticeTeam } from "@/lib/types";
 
-const STYLES: Record<PracticeTeam, { label: string; className: string } | null> = {
+const STYLES: Record<PracticeTeam, { label: string; className: string }> = {
   male: {
     label: "男子",
     className:
@@ -11,19 +11,21 @@ const STYLES: Record<PracticeTeam, { label: string; className: string } | null> 
     className:
       "bg-pink-50 text-pink-700 ring-pink-600/20 dark:bg-pink-500/10 dark:text-pink-400 dark:ring-pink-500/30",
   },
-  // フォルダ名から判定できない場合はバッジ自体を表示しない
-  unknown: null,
+  camp: {
+    label: "合宿",
+    className:
+      "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/30",
+  },
 };
 
 export default function TeamBadge({ team }: { team: PracticeTeam }) {
-  const style = STYLES[team];
-  if (!style) return null;
+  const { label, className } = STYLES[team];
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${style.className}`}
+      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${className}`}
     >
-      {style.label}
+      {label}
     </span>
   );
 }

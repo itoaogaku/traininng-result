@@ -18,11 +18,11 @@ const STATUS_KEYWORDS: Record<string, PracticeStatus> = {
 
 const DATE_TOKEN = /^\d{4}-\d{2}-\d{2}$/;
 
-/** パス中の「男子」「女子」フォルダ名から所属を判定する */
+/** パス中の「男子」「女子」フォルダ名から所属を判定する。それ以外は合宿フォルダとして扱う */
 function inferTeam(path: string): PracticeTeam {
   if (path.includes("男子")) return "male";
   if (path.includes("女子")) return "female";
-  return "unknown";
+  return "camp";
 }
 
 function encodeResultId(path: string): string {
